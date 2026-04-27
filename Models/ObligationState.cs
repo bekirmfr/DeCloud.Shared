@@ -1,20 +1,5 @@
 namespace DeCloud.Shared.Models;
 
-// ============================================================
-// Placement: src/Shared/Models/ObligationState.cs
-//
-// Replaces: src/DeCloud.NodeAgent.Core/Models/ObligationState.cs
-//
-// Both projects already include src/Shared/**/*.cs via:
-//   <Compile Include="../Shared/**/*.cs" ... />
-// so no .csproj changes are needed.
-//
-// Delete the NodeAgent.Core version after placing this file.
-// Update any using directives from DeCloud.NodeAgent.Core.Models
-// to DeCloud.Shared.Models in ObligationStateService.cs,
-// ObligationStateController.cs, and IObligationStateService.cs.
-// ============================================================
-
 /// <summary>
 /// Base class for all obligation identity state.
 /// Stored in SQLite obligation_state table as a JSON blob (state_json column).
@@ -115,27 +100,83 @@ public class BlockStoreObligationState : ObligationStateBase
 }
 
 /// <summary>
-/// Canonical role name constants and validation helpers.
-/// These strings are the primary key in the SQLite obligation_state table
-/// and the route segment in ObligationStateController.
+/// Canonical role names and role-related lookups used by both the
+/// orchestrator and the node agent.
+///
+/// This is the single source of truth for string role names. The Orchestrator
+/// additionally has <c>SystemVmRoleMap</c> for mappings that require the
+/// <c>SystemVmRole</c> enum (which is not available in Shared).
+///
+/// <b>String-only by design.</b> Adding the <c>SystemVmRole</c> enum here
+/// would pull Orchestrator types into Shared, reversing the dependency direction.
 /// </summary>
 public static class ObligationRole
 {
-    public const string Relay      = "relay";
-    public const string Dht        = "dht";
+    // ── Canonical names ──────────────────────────────────────────────────
+
+    public const string Relay = "relay";
+    public const string Dht = "dht";
     public const string BlockStore = "blockstore";
 
-    private static readonly HashSet<string> _valid =
-        new(StringComparer.OrdinalIgnoreCase) { Relay, Dht, BlockStore };
-
-    /// <summary>Returns true if <paramref name="role"/> is one of the three known roles.</summary>
-    public static bool IsValid(string? role) =>
-        role is not null && _valid.Contains(role);
+    // ── Canonical set ────────────────────────────────────────────────────
 
     /// <summary>
-    /// Returns the canonical lower-case role name, or null if unrecognised.
-    /// Use this before any DB lookup to prevent open-ended queries.
+    /// The complete set of system VM role names in dependency order:
+    /// Relay (no deps) → Dht (depends on Relay) → BlockStore (depends on Dht).
+    ///
+    /// Used anywhere code needs to iterate all roles, e.g.:
+    ///   • <c>SystemVmReconciler</c> iterates this to evaluate all matrix cells.
+    ///   • <c>OrchestratorClient.BuildObligationStateVersionsAsync</c> reports
+    ///     versions for all roles.
+    ///   • <c>IObligationStateService.GetSystemTemplateRevisionsAsync</c>
+    ///     queries all three rows.
+    ///
+    /// Ordering is significant for diagnostics and heartbeat logs but not
+    /// for correctness — dependency enforcement is data-driven via
+    /// <see cref="ObligationDescriptor.Deps"/>.
+    /// </summary>
+    public static readonly IReadOnlyList<string> All =
+        [Relay, Dht, BlockStore];
+
+    // ── Canonicalisation ─────────────────────────────────────────────────
+
+    /// <summary>
+    /// Normalise an arbitrary role string to its lower-case canonical form,
+    /// or return <c>null</c> if unrecognised.
+    ///
+    /// The gate for all role strings entering the system — call this before
+    /// any database access, switch statement, or dictionary lookup keyed on
+    /// role name. Prevents open-ended queries and case-sensitivity bugs.
     /// </summary>
     public static string? Canonicalise(string? role) =>
-        IsValid(role) ? role!.ToLowerInvariant() : null;
+        role?.Trim().ToLowerInvariant() switch
+        {
+            Relay => Relay,
+            Dht => Dht,
+            BlockStore => BlockStore,
+            _ => null,
+        };
+
+    // ── System template slugs ────────────────────────────────────────────
+
+    /// <summary>
+    /// Maps a canonical role name to its system VM template slug in MongoDB.
+    /// These slugs are how <c>DataStore.GetTemplateBySlugAsync</c> is called
+    /// when building the system template payload for the registration response.
+    ///
+    /// Used on both sides (orchestrator builds, node agent may log).
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown for unrecognised role names. Callers should canonicalise first.
+    /// </exception>
+    public static string ToTemplateSlug(string canonicalRole) => canonicalRole switch
+    {
+        Relay => "system-relay",
+        Dht => "system-dht",
+        BlockStore => "system-blockstore",
+        _ => throw new ArgumentOutOfRangeException(
+                          nameof(canonicalRole),
+                          $"No template slug for role '{canonicalRole}'.")
+    };
 }
+
