@@ -1,0 +1,80 @@
+# ============================================================
+# DeCloud.Shared — .gitignore
+#
+# This folder contains shared C# source files included directly
+# into consuming projects via:
+#   <Compile Include="../Shared/**/*.cs" />
+#
+# There is no csproj or build output here. This .gitignore
+# covers IDE artifacts, OS noise, and any future scaffolding.
+# ============================================================
+
+
+# ── Build output ─────────────────────────────────────────────
+# In case a standalone csproj is ever added.
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+artifacts/
+*.nupkg
+*.snupkg
+
+
+# ── Visual Studio ─────────────────────────────────────────────
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.rsuser
+
+# Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+
+
+# ── NuGet ─────────────────────────────────────────────────────
+project.lock.json
+project.fragment.lock.json
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+
+# ── Test / coverage ───────────────────────────────────────────
+[Tt]est[Rr]esult*/
+coverage*.json
+coverage*.xml
+coverage*.info
+*.coverage
+*.coveragexml
+BenchmarkDotNet.Artifacts/
+
+
+# ── Generated code ────────────────────────────────────────────
+# Roslyn source generators land here on some configurations.
+Generated\ Files/
+*.g.cs
+*.generated.cs
+
+
+# ── OS noise ──────────────────────────────────────────────────
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
