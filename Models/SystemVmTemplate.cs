@@ -38,6 +38,15 @@ public class SystemVmTemplate
     public string Role { get; set; } = string.Empty;
 
     /// <summary>
+    /// MongoDB _id of the VmTemplate document this spec was built from.
+    /// Stable across template revisions (revision bumps preserve the _id).
+    /// The reconciler uses this to detect template substitution — if the
+    /// obligation's TemplateId changes, the running VM was deployed from a
+    /// different template and must be redeployed.
+    /// </summary>
+    public string TemplateId { get; set; } = string.Empty;
+
+    /// <summary>
     /// Monotonic revision counter, taken from <c>VmTemplate.Revision</c>.
     /// The node compares its stored revision against the orchestrator's to
     /// detect drift. Bumped by the orchestrator whenever the cloud-init
@@ -143,6 +152,13 @@ public class SystemVmServiceDeclaration
 /// </summary>
 public class SystemVmTemplatePayload
 {
+    /// <summary>
+    /// MongoDB _id of the source VmTemplate. Stored by the node agent
+    /// alongside the template JSON so it can be reported back to the
+    /// orchestrator without deserialising the full template.
+    /// </summary>
+    public string TemplateId { get; init; } = string.Empty;
+
     /// <summary>
     /// JSON-serialised <see cref="SystemVmTemplate"/>.
     /// The node agent deserialises and stores in the <c>system_template</c>
