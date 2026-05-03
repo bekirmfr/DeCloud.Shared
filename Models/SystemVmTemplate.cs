@@ -63,6 +63,14 @@ public class SystemVmTemplate
     public string CloudInitContent { get; set; } = string.Empty;
 
     /// <summary>
+    /// Variables declared by this system-VM template (design §2.2).
+    /// Mirrors <see cref="VmTemplate.Variables"/>; copied by the orchestrator
+    /// when projecting the marketplace template into the lightweight
+    /// node-side spec.
+    /// </summary>
+    public List<TemplateVariable> Variables { get; set; } = new();
+
+    /// <summary>
     /// Artifacts attached to this template. The reconciler calls
     /// <c>IArtifactCacheService.PrefetchAsync</c> for this list immediately
     /// after the template is saved to SQLite, ensuring all binaries and
