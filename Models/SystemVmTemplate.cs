@@ -147,6 +147,11 @@ public class SystemVmServiceDeclaration
 
     /// <summary>HTTP path to probe for <c>CheckType = HttpGet</c>.</summary>
     public string? HttpPath { get; set; }
+    /// <summary>
+    /// When true, the node's VmReadinessMonitor periodically re-verifies
+    /// this service after it reaches Ready. Default: false.
+    /// </summary>
+    public bool LivenessCheck { get; set; } = false;
 
     /// <summary>Seconds to wait before marking the service as timed out.</summary>
     public int TimeoutSeconds { get; set; } = 300;
