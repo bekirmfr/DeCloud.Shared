@@ -90,6 +90,19 @@ public class SystemVmTemplate
     public long DiskBytes { get; set; }
 
     /// <summary>
+    /// Quality tier for this system VM. System VMs should always be Burstable
+    /// (lowest cost, 4:1 overcommit) since they are lightweight infrastructure.
+    /// </summary>
+    public int QualityTier { get; set; } = 3; // Burstable
+
+    /// <summary>
+    /// Pre-calculated compute point cost. System VMs with 1 vCPU at Burstable
+    /// tier cost 1 point. Stored explicitly so the node agent doesn't need
+    /// access to the scheduling config to derive it.
+    /// </summary>
+    public int ComputePointCost { get; set; } = 1;
+
+    /// <summary>
     /// Base image URL or image ID.
     /// If it is a full HTTPS URL, the node downloads directly.
     /// If it is an image ID (e.g., "debian-12-dht"), the node resolves it
