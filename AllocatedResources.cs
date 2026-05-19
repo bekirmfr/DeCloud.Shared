@@ -25,11 +25,19 @@ public class AllocatedResources
     public long? MemoryBytes { get; set; }
 
     /// <summary>
-    /// Operator-allocated compute points.
-    /// Resolved from either percent × TotalComputePoints or absolute points.
-    /// Null = platform default (90% of hardware-max compute points).
+    /// Operator-allocated compute points (absolute).
+    /// The orchestrator caps at min(this, hardware-evaluated points).
+    /// Null = use ComputePointsPercent or platform default.
     /// </summary>
     public int? ComputePoints { get; set; }
+
+    /// <summary>
+    /// Operator-allocated compute points as a percentage of hardware-evaluated points.
+    /// Applied by the orchestrator after benchmark evaluation: effective = floor(evaluated × pct/100).
+    /// 100 = offer all evaluated points. Null = platform default (90%).
+    /// Takes effect only when ComputePoints is null.
+    /// </summary>
+    public int? ComputePointsPercent { get; set; }
 
     /// <summary>
     /// Operator-allocated storage in bytes (pre-overcommit).
