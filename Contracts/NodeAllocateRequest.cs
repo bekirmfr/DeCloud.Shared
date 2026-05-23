@@ -48,22 +48,22 @@ public class NodeAllocateRequest
     public string? Validate()
     {
         if (CpuPercent.HasValue &&
-            (CpuPercent.Value < AllocatedResources.MinPercent ||
-             CpuPercent.Value > AllocatedResources.MaxPercent))
+            (CpuPercent.Value < AllocationConfig.MinPercent ||
+             CpuPercent.Value > AllocationConfig.MaxPercent))
             return $"CpuPercent {CpuPercent.Value:P0} outside allowed range " +
-                   $"({AllocatedResources.MinPercent:P0}–{AllocatedResources.MaxPercent:P0})";
+                   $"({AllocationConfig.MinPercent:P0}–{AllocationConfig.MaxPercent:P0})";
 
         if (MemoryPercent.HasValue &&
-            (MemoryPercent.Value < AllocatedResources.MinPercent ||
-             MemoryPercent.Value > AllocatedResources.MaxPercent))
+            (MemoryPercent.Value < AllocationConfig.MinPercent ||
+             MemoryPercent.Value > AllocationConfig.MaxPercent))
             return $"MemoryPercent {MemoryPercent.Value:P0} outside allowed range " +
-                   $"({AllocatedResources.MinPercent:P0}–{AllocatedResources.MaxPercent:P0})";
+                   $"({AllocationConfig.MinPercent:P0}–{AllocationConfig.MaxPercent:P0})";
 
         if (StoragePercent.HasValue &&
-            (StoragePercent.Value < AllocatedResources.MinPercent ||
-             StoragePercent.Value > AllocatedResources.MaxPercent))
+            (StoragePercent.Value < AllocationConfig.MinPercent ||
+             StoragePercent.Value > AllocationConfig.MaxPercent))
             return $"StoragePercent {StoragePercent.Value:P0} outside allowed range " +
-                   $"({AllocatedResources.MinPercent:P0}–{AllocatedResources.MaxPercent:P0})";
+                   $"({AllocationConfig.MinPercent:P0}–{AllocationConfig.MaxPercent:P0})";
 
         if (GpuCount.HasValue && GpuCount.Value < 0)
             return $"GpuCount cannot be negative ({GpuCount.Value})";
@@ -71,25 +71,6 @@ public class NodeAllocateRequest
         return null;
     }
 
-    /// <summary>
-    /// Merge this request into an existing <see cref="AllocatedResources"/>,
-    /// applying only the non-null fields. Returns a new v2 instance.
-    /// </summary>
-    public AllocatedResources ApplyTo(AllocatedResources? existing)
-    {
-        existing ??= new AllocatedResources { SchemaVersion = AllocatedResources.CurrentSchemaVersion };
-
-        return new AllocatedResources
-        {
-            SchemaVersion = AllocatedResources.CurrentSchemaVersion,
-            CpuPercent = CpuPercent ?? existing.CpuPercent,
-            MemoryPercent = MemoryPercent ?? existing.MemoryPercent,
-            StoragePercent = StoragePercent ?? existing.StoragePercent,
-            GpuCount = GpuCount ?? existing.GpuCount,
-            // Legacy fields cleared on v2
-            MemoryBytes = null,
-            ComputePoints = null,
-            StorageBytes = null
-        };
-    }
+    // ApplyTo removed — merge logic is in NodeService.AllocateNodeAsync.
+    // NodeAllocateRequest is a pure wire DTO: validate and pass through.
 }
