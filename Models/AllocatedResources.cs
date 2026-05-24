@@ -111,6 +111,12 @@ public class AllocatedResources
     /// </summary>
     public int? GpuCount { get; set; }
 
+    /// <summary>
+    /// Percentage of proxy-eligible GPU VRAM to offer (0.01–0.95).
+    /// Null = all proxy-eligible VRAM (100% default).
+    /// </summary>
+    public double? GpuVramPercent { get; set; }
+
     // =========================================================================
     // Constants
     // =========================================================================

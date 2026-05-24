@@ -26,6 +26,13 @@ public class AllocationConfig
     /// <summary>Number of GPUs to offer. Null = all detected.</summary>
     public int? GpuCount { get; set; }
 
+    /// <summary>
+    /// Percentage of proxy-eligible GPU VRAM to offer (0.01–0.95).
+    /// Null = platform default (100% — all proxy-eligible VRAM offered).
+    /// Only meaningful for Proxied GPU workloads; Passthrough is bounded by GpuCount.
+    /// </summary>
+    public double? GpuVramPercent { get; set; }
+
     [JsonIgnore]
     public double EffectiveCpuPercent => CpuPercent ?? DefaultPercent;
 

@@ -42,6 +42,12 @@ public class NodeAllocateRequest
     public int? GpuCount { get; set; }
 
     /// <summary>
+    /// Percentage of proxy-eligible GPU VRAM to offer (0.01–0.95).
+    /// Null = keep current / use 100% of proxy-eligible VRAM.
+    /// </summary>
+    public double? GpuVramPercent { get; set; }
+
+    /// <summary>
     /// Validate all fields are within allowed ranges.
     /// Returns null if valid, or an error message on first violation.
     /// </summary>
@@ -67,6 +73,12 @@ public class NodeAllocateRequest
 
         if (GpuCount.HasValue && GpuCount.Value < 0)
             return $"GpuCount cannot be negative ({GpuCount.Value})";
+
+        if (GpuVramPercent.HasValue &&
+            (GpuVramPercent.Value < AllocationConfig.MinPercent ||
+             GpuVramPercent.Value > AllocationConfig.MaxPercent))
+            return $"GpuVramPercent {GpuVramPercent.Value:P0} outside allowed range " +
+                   $"({AllocationConfig.MinPercent:P0}–{AllocationConfig.MaxPercent:P0})";
 
         return null;
     }

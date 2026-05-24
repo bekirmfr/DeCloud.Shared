@@ -45,4 +45,15 @@ public class NodeAllocateResponse
     /// given physical storage. Null if hardware inventory unavailable.
     /// </summary>
     public long? ResolvedStorageBytes { get; set; }
+
+    /// <summary>
+    /// Stored GPU VRAM allocation percentage. Null = 100% (all proxy-eligible VRAM).
+    /// </summary>
+    public double? EffectiveGpuVramPercent { get; set; }
+
+    /// <summary>
+    /// Absolute proxy-eligible VRAM bytes this percentage maps to.
+    /// Null if no proxy-eligible GPUs detected or node not yet evaluated.
+    /// </summary>
+    public long? ResolvedGpuVramBytes { get; set; }
 }
