@@ -17,7 +17,7 @@ public record NodeHeartbeat(
     int SchedulingConfigVersion,
     List<HeartbeatVmInfo>? ActiveVms = null,
     CgnatNodeInfo? CgnatInfo = null,
-    Dictionary<string, string>? SystemVmBinaryVersions = null,
+    Dictionary<string, string?>? SystemVmBinaryVersions = null,
     Dictionary<string, int>? ObligationStateVersions = null,
     Dictionary<string, string>? ObligationHealth = null,
     Dictionary<string, int>? SystemTemplateVersions = null,
@@ -47,13 +47,14 @@ public class NodeMetrics
 /// </summary>
 public class HeartbeatVmInfo
 {
-    public string VmId { get; set; } = string.Empty;
-    public string? Name { get; set; }
+    public required string VmId { get; set; }
+    public required string Name { get; set; }
+    public required string Category { get; set; }
+    /// <summary>VM role type string — used by orchestrator to adopt system VMs.</summary>
+    public required string Role { get; set; }
+    public string OwnerId { get; set; } = string.Empty;
     /// <summary>"Running", "Stopped", "Deleted", etc. — string to survive future VmState additions.</summary>
     public string State { get; set; } = string.Empty;
-    /// <summary>VM role type string — used by orchestrator to adopt system VMs.</summary>
-    public string? VmType { get; set; }
-    public string OwnerId { get; set; } = string.Empty;
     /// <summary>Binary version from /diagnostics. Non-null only for running Dht/BlockStore VMs.</summary>
     public string? BinaryVersion { get; set; }
     public bool IsIpAssigned { get; set; }
