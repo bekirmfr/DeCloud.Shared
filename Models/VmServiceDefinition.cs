@@ -38,6 +38,13 @@
         public string CheckType { get; set; } = "CloudInitDone";
 
         /// <summary>
+        /// When true, VmReadinessMonitor periodically re-verifies this service after
+        /// it reaches Ready. A failed re-check reverts Ready → Failed.
+        /// Matches SystemVmServiceDeclaration.LivenessCheck.
+        /// </summary>
+        public bool LivenessCheck { get; set; } = false;
+
+        /// <summary>
         /// For HttpGet: URL path to check
         /// </summary>
         public string? HttpPath { get; set; }

@@ -138,7 +138,7 @@ public class SystemVmTemplate
 
 /// <summary>
 /// A single service readiness declaration inside a <see cref="SystemVmTemplate"/>.
-/// Mirrors the subset of <c>VmServiceStatus</c> the node needs at deploy time.
+/// Mirrors the subset of <c>VmServiceModel</c> the node needs at deploy time.
 /// </summary>
 public class SystemVmServiceDeclaration
 {
