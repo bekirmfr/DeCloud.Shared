@@ -24,7 +24,7 @@ namespace DeCloud.Shared.Models
         public string? IpAddress { get; set; }
         public int? VncPort { get; set; }
         public string? MacAddress { get; set; }
-        public List<ServiceSummary>? Services { get; set; }
+        public List<VmServiceSummary>? Services { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

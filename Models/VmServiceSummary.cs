@@ -3,7 +3,7 @@
     /// <summary>
     /// Lightweight service status for heartbeat reporting.
     /// </summary>
-    public class ServiceSummary
+    public class VmServiceSummary
     {
         public string Name { get; set; } = string.Empty;
         public int? Port { get; set; }
