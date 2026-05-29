@@ -40,6 +40,6 @@ namespace DeCloud.Shared.Models
         public List<QualityTier> EligibleTiers { get; set; } = new();
         public QualityTier? HighestTier { get; set; }
 
-        public Dictionary<QualityTier, TierCapability> TierCapabilities { get; set; } = new();
+        public List<TierCapability> TierCapabilities { get; set; } = new();
     }
 }
