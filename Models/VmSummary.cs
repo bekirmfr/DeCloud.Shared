@@ -27,5 +27,22 @@ namespace DeCloud.Shared.Models
         public List<VmServiceSummary>? Services { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+
+        /// <summary>
+        /// HTTPS URL the base image was downloaded from. Reported to the
+        /// orchestrator so it can detect drift between what it told the node
+        /// to use and what the node actually used.
+        /// See BASE_IMAGE_DESIGN.md §4.5.
+        /// </summary>
+        public string? BaseImageUrl { get; set; }
+
+        /// <summary>
+        /// SHA256 of the cached base image bytes (lowercase hex, 64 chars).
+        /// First-deploy discovery: node computes after download and reports
+        /// here; orchestrator adopts on first non-empty heartbeat. Migration:
+        /// node reports the strictly-verified hash here.
+        /// See BASE_IMAGE_DESIGN.md §4.5.
+        /// </summary>
+        public string? BaseImageHash { get; set; }
     }
 }

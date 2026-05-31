@@ -71,6 +71,20 @@ public class HeartbeatVmInfo
     public int GpuMode { get; set; }
     public long? GpuVramBytes { get; set; }
     public string? ImageId { get; set; }
+    /// <summary>
+    /// HTTPS URL the base image was downloaded from. Reported so the
+    /// orchestrator can detect drift between what it told the node to use
+    /// and what the node actually used.
+    /// </summary>
+    public string? BaseImageUrl { get; set; }
+    /// <summary>
+    /// SHA256 of the cached base image bytes (lowercase hex, 64 chars).
+    /// Adopted by the orchestrator on first non-empty heartbeat so future
+    /// migration dispatches carry the authoritative hash. A non-empty
+    /// mismatch against the orchestrator's recorded hash is a tamper signal
+    /// surfaced as a warning by SyncVmStateFromHeartbeatAsync.
+    /// </summary>
+    public string? BaseImageHash { get; set; }
     public DateTime? StartedAt { get; set; }
     public List<HeartbeatServiceInfo>? Services { get; set; }
 }

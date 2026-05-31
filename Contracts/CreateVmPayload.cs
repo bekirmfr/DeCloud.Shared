@@ -34,7 +34,15 @@ public sealed class CreateVmPayload
     public DeploymentMode DeploymentMode { get; init; } = DeploymentMode.VirtualMachine;
     public string? ContainerImage { get; init; }
     public string? BaseImageUrl { get; init; }
-    public string? CloudInitUserData { get; init; }      // FIXES the current name mismatch
+    /// <summary>
+    /// Expected SHA256 of the base image (lowercase hex, 64 chars).
+    /// Authoritative identity of the bytes the source overlay was authored
+    /// against. Empty on first deploy when the orchestrator has no recorded
+    /// hash yet — the node computes and reports it back via heartbeat.
+    /// Non-empty on migration: the target MUST enforce strict verification.
+    /// </summary>
+    public string? BaseImageHash { get; init; }
+    public string? CloudInitUserData { get; init; }
     public string? SshPublicKey { get; init; }
     public Dictionary<string, string>? EnvironmentVariables { get; init; }
 
