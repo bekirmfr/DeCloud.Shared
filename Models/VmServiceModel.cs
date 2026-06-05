@@ -1,4 +1,5 @@
 ﻿using DeCloud.Shared.Enums;
+using System.Text.Json.Serialization;
 
 namespace DeCloud.Shared.Models
 {
@@ -79,5 +80,20 @@ namespace DeCloud.Shared.Models
         /// Max seconds to wait before marking TimedOut
         /// </summary>
         public int TimeoutSeconds { get; set; } = 300;
+
+        /// <summary>
+        /// In-memory consecutive failed-probe counter for GuestAgentPing services.
+        /// Reset to 0 on every successful probe. Used by VmReadinessMonitor to
+        /// require sustained failure before transitioning Ready → Failed, matching
+        /// the Kubernetes failureThreshold pattern.
+        ///
+        /// <see cref="JsonIgnoreAttribute"/> is intentional: the counter must reset
+        /// on agent restart so the post-restart virtio-channel reconnect window
+        /// starts from zero, and the orchestrator never needs to see this
+        /// node-internal diagnostic value (it would also be stale by the time it
+        /// arrived via heartbeat).
+        /// </summary>
+        [JsonIgnore]
+        public int ConsecutiveFailures { get; set; }
     }
 }
