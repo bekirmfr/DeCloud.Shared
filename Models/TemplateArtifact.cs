@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+
 namespace DeCloud.Shared.Models;
 
 // ============================================================
@@ -230,4 +232,50 @@ public class TemplateArtifact
     /// </summary>
     public bool IsInline =>
         SourceUrl.StartsWith("data:", StringComparison.OrdinalIgnoreCase);
+
+    // ── Artifact factory ─────────────────────────────────────────────────
+    // Mirrors SystemVmTemplateSeeder.Artifact for consistency. If a third
+    // seeder appears, refactor this and the SHA256 verification into a shared
+    // helper class.
+
+    public static TemplateArtifact Artifact(
+        string name,
+        string description,
+        ArtifactType type,
+        string sha256,
+        string sourceUrl,
+        string? arch = null,
+        long sizeBytes = 0)
+    {
+        if (sourceUrl.StartsWith("data:", StringComparison.OrdinalIgnoreCase) &&
+            sha256 != "COMPUTE_FROM_FILE")
+        {
+            var commaIndex = sourceUrl.IndexOf(',');
+            if (commaIndex >= 0)
+            {
+                var bytes = Convert.FromBase64String(sourceUrl[(commaIndex + 1)..].Trim());
+                var actual = Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
+                if (!string.Equals(actual, sha256, StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidOperationException(
+                        $"GeneralVmTemplateSeeder: inline artifact '{name}' SHA256 mismatch. " +
+                        $"Expected {sha256[..12]}, actual {actual[..12]}. " +
+                        "Run compute-artifact-constants.sh to regenerate constants.");
+
+                sizeBytes = bytes.Length;
+            }
+        }
+
+        return new TemplateArtifact
+        {
+            Name = name,
+            Description = description,
+            Type = type,
+            Architecture = arch,
+            Sha256 = sha256,
+            SizeBytes = sizeBytes,
+            SourceUrl = sourceUrl,
+            RegisteredAt = DateTime.UtcNow,
+            RegisteredBy = "system",
+        };
+    }
 }
