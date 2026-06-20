@@ -257,7 +257,7 @@ public class TemplateArtifact
                 var actual = Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
                 if (!string.Equals(actual, sha256, StringComparison.OrdinalIgnoreCase))
                     throw new InvalidOperationException(
-                        $"GeneralVmTemplateSeeder: inline artifact '{name}' SHA256 mismatch. " +
+                        $"TenantVmTemplateSeeder: inline artifact '{name}' SHA256 mismatch. " +
                         $"Expected {sha256[..12]}, actual {actual[..12]}. " +
                         "Run compute-artifact-constants.sh to regenerate constants.");
 
