@@ -32,5 +32,11 @@ public record NodeHeartbeatResponse(
     /// </summary>
     List<string>? SystemTemplatesPending = null,
     SettingsDriftInfo? SettingsDrift = null,
-    bool SchedulingReady = false
+    bool SchedulingReady = false,
+    /// <summary>
+    /// VM IDs on this node the orchestrator has administratively held (ComplianceHold).
+    /// Informational — the node surfaces these on its dashboard and must NOT start,
+    /// stop, or delete them; the orchestrator enforces the hold.
+    /// </summary>
+    List<string>? HeldVmIds = null
 );
